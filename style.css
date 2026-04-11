@@ -1,0 +1,1014 @@
+:root {
+    /* —— 浅色模式（默认） —— */
+    --editor-bg: #fafafa;
+    --editor-text: #24292e;
+    --editor-line-num: #959da5;
+    --editor-caret: #0366d6;
+    --editor-selection: rgba(3, 102, 214, 0.15);
+    --editor-font: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+    --editor-font-size: 14px;
+
+    --gui-bg: #f0f0f0;
+    --gui-surface: #ffffff;
+    --gui-surface2: #f6f8fa;
+    --gui-border: #d0d7de;
+    --gui-text: #1f2328;
+    --gui-text-dim: #656d76;
+    --gui-accent: #0969da;
+    --gui-accent-hover: #0550ae;
+    --gui-accent-glow: rgba(9, 105, 218, 0.2);
+    --gui-danger: #cf222e;
+    --gui-success: #1a7f37;
+    --gui-warning: #9a6700;
+    --gui-radius: 10px;
+    --gui-radius-sm: 6px;
+    --gui-font: 'Inter',-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+
+    /* —— 答题卡样式 —— */
+    --card-bg: #ffffff;
+    --card-text: #000000;
+    --card-border: #000000;
+    --card-title-font: 'Times New Roman', 'SimHei', 'Heiti SC', 'Microsoft YaHei', sans-serif;
+    --card-body-font: 'Times New Roman', 'SimSun', 'Songti SC', serif;
+    --card-option-font: 'Times New Roman', 'SimSun', serif;
+    --card-line-color: #ff0000;
+    --card-red: #ff0000;
+    --card-option-border: #ff0000;
+    --card-option-bg: transparent;
+    --card-section-title-bg: #f5f5f5;
+    --card-separator-color: #000000;
+    --card-column-gap: 0mm;
+    --card-padding: 10mm;
+    --card-base-font-size: 15px;
+    --card-bracket-weight: 400;
+
+    --preview-bg: #e8e8e8;
+}
+
+/* —— 深色模式 —— */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --editor-bg: #1e1e2e;
+        --editor-text: #cdd6f4;
+        --editor-line-num: #585b70;
+        --editor-caret: #f5c2e7;
+        --editor-selection: rgba(137, 180, 250, 0.25);
+
+        --gui-bg: #11111b;
+        --gui-surface: #181825;
+        --gui-surface2: #1e1e2e;
+        --gui-border: #313244;
+        --gui-text: #cdd6f4;
+        --gui-text-dim: #6c7086;
+        --gui-accent: #89b4fa;
+        --gui-accent-hover: #74c7ec;
+        --gui-accent-glow: rgba(137, 180, 250, 0.3);
+        --gui-danger: #f38ba8;
+        --gui-success: #a6e3a1;
+        --gui-warning: #f9e2af;
+
+        --preview-bg: #2b2b3a;
+    }
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box
+}
+
+html,
+body {
+    height: 100%;
+    font-family: var(--gui-font);
+    background: var(--gui-bg);
+    color: var(--gui-text);
+    overflow: hidden
+}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh
+}
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--gui-surface);
+    border-bottom: 1px solid var(--gui-border);
+    flex-shrink: 0;
+    z-index: 100;
+    flex-wrap: wrap
+}
+
+.toolbar-brand {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--gui-accent);
+    margin-right: 12px;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none
+}
+
+.toolbar-brand svg {
+    width: 22px;
+    height: 22px
+}
+
+.toolbar-sep {
+    width: 1px;
+    height: 24px;
+    background: var(--gui-border);
+    margin: 0 6px
+}
+
+.toolbar-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    font-size: 13px;
+    font-family: var(--gui-font);
+    font-weight: 500;
+    color: var(--gui-text);
+    background: var(--gui-surface2);
+    border: 1px solid var(--gui-border);
+    border-radius: var(--gui-radius-sm);
+    cursor: pointer;
+    transition: all .2s;
+    white-space: nowrap
+}
+
+.toolbar-btn:hover {
+    border-color: var(--gui-accent);
+    color: var(--gui-accent);
+    box-shadow: 0 0 0 3px var(--gui-accent-glow)
+}
+
+.toolbar-btn.primary {
+    background: var(--gui-accent);
+    color: #fff;
+    border-color: var(--gui-accent)
+}
+
+.toolbar-btn.primary:hover {
+    background: var(--gui-accent-hover);
+    border-color: var(--gui-accent-hover);
+    box-shadow: 0 0 0 3px var(--gui-accent-glow)
+}
+
+.toolbar-btn svg {
+    width: 16px;
+    height: 16px
+}
+
+.toolbar-spacer {
+    flex: 1
+}
+
+.toolbar-hint {
+    font-size: 12px;
+    color: var(--gui-text-dim);
+    display: flex;
+    align-items: center;
+    gap: 4px
+}
+
+.toolbar-hint kbd {
+    padding: 1px 5px;
+    background: var(--gui-surface2);
+    border: 1px solid var(--gui-border);
+    border-radius: 3px;
+    font-size: 11px;
+    font-family: var(--editor-font)
+}
+
+.main-area {
+    display: flex;
+    flex: 1;
+    overflow: hidden
+}
+
+/* —— Editor —— */
+.editor-panel {
+    width: 42%;
+    min-width: 320px;
+    display: flex;
+    flex-direction: column;
+    background: var(--editor-bg);
+    border-right: 1px solid var(--gui-border)
+}
+
+.editor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    background: var(--gui-surface);
+    border-bottom: 1px solid var(--gui-border);
+    font-size: 12px;
+    color: var(--gui-text-dim)
+}
+
+.editor-header-tab {
+    display: flex;
+    align-items: center;
+    gap: 6px
+}
+
+.editor-header-tab .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--gui-success)
+}
+
+.editor-wrapper {
+    flex: 1;
+    position: relative;
+    overflow: hidden
+}
+
+#editor {
+    width: 100%;
+    height: 100%;
+    padding: 16px 20px;
+    background: transparent;
+    color: var(--editor-text);
+    font-family: var(--editor-font);
+    font-size: var(--editor-font-size);
+    line-height: 1.75;
+    border: none;
+    outline: none;
+    resize: none;
+    tab-size: 2;
+    caret-color: var(--editor-caret);
+    overflow-y: auto
+}
+
+#editor::selection {
+    background: var(--editor-selection)
+}
+
+#editor::-webkit-scrollbar {
+    width: 8px
+}
+
+#editor::-webkit-scrollbar-track {
+    background: transparent
+}
+
+#editor::-webkit-scrollbar-thumb {
+    background: var(--gui-border);
+    border-radius: 4px
+}
+
+/* —— Resizer —— */
+.resizer {
+    width: 5px;
+    cursor: col-resize;
+    background: var(--gui-border);
+    transition: background .2s;
+    flex-shrink: 0
+}
+
+.resizer:hover,
+.resizer.active {
+    background: var(--gui-accent)
+}
+
+/* —— Preview —— */
+.preview-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--preview-bg);
+    overflow: hidden
+}
+
+.preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    background: var(--gui-surface);
+    border-bottom: 1px solid var(--gui-border);
+    font-size: 12px;
+    color: var(--gui-text-dim);
+    flex-shrink: 0
+}
+
+.preview-zoom {
+    display: flex;
+    align-items: center;
+    gap: 6px
+}
+
+.preview-zoom button {
+    background: var(--gui-surface2);
+    border: 1px solid var(--gui-border);
+    color: var(--gui-text);
+    width: 26px;
+    height: 26px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .2s
+}
+
+.preview-zoom button:hover {
+    border-color: var(--gui-accent);
+    color: var(--gui-accent)
+}
+
+.preview-zoom span {
+    min-width: 40px;
+    text-align: center;
+    font-family: var(--editor-font)
+}
+
+.preview-zoom .fit-btn {
+    width: auto;
+    padding: 0 8px;
+    font-size: 12px
+}
+
+.preview-scroll {
+    flex: 1;
+    overflow: auto;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px
+}
+
+.preview-scroll::-webkit-scrollbar {
+    width: 10px
+}
+
+.preview-scroll::-webkit-scrollbar-track {
+    background: transparent
+}
+
+.preview-scroll::-webkit-scrollbar-thumb {
+    background: var(--gui-border);
+    border-radius: 5px
+}
+
+/* ============================================================
+   SHEET PAGE (A3)
+   ============================================================ */
+.sheet-page {
+    background: var(--card-bg);
+    color: var(--card-text);
+    width: 420mm;
+    min-height: 297mm;
+    padding: var(--card-padding);
+    /* box-shadow: 0 4px 40px rgba(0, 0, 0, .15); */
+    border-radius: 10px;
+    transform-origin: top center;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    font-family: var(--card-body-font);
+}
+
+@media(prefers-color-scheme:dark) {
+    .sheet-page {
+        /* box-shadow: 0 4px 40px rgba(0, 0, 0, .5) */
+    }
+}
+
+/* 页面内部布局：红色圆角外框 → 提示文字 → 黑色矩形内框 → 三栏内容 */
+.sheet-outer-frame {
+    height: calc(297mm - 2*var(--card-padding));
+    display: flex;
+    position: relative;
+    overflow: hidden;
+    gap: 3mm;
+}
+
+.sheet-col-outer{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+.sheet-col-outer .sheet-col-wrap{
+  flex:1;
+}
+
+.sheet-col-wrap {
+    /* flex: 1; */
+    display: flex;
+    flex-direction: column;
+    border: 1.5px solid var(--card-red);
+    border-radius: 4mm;
+    overflow: hidden;
+}
+
+.sheet-col-hint {
+    font-family: var(--card-body-font);
+    font-size: 0.7em;
+    color: var(--card-red);
+    text-align: center;
+    padding: 0.6mm 1mm;
+    /* line-height: 1.3; */
+    flex-shrink: 0;
+}
+
+.sheet-col-inner {
+    flex: 1;
+    border: 1.5px solid var(--card-border);
+    margin: 0 1.2mm;
+    overflow: hidden;
+}
+
+.sheet-col-hint-bottom {
+    font-family: var(--card-body-font);
+    font-size: 0.7em;
+    color: var(--card-red);
+    text-align: center;
+    padding: 0.6mm 1mm;
+    /* line-height: 1.3; */
+    flex-shrink: 0;
+}
+
+.sheet-col {
+    padding: 3mm 3mm;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* 页脚角标 */
+.sheet-footer-mark {
+    position: absolute;
+    bottom: 5mm;
+    left: 10mm;
+    font-family: var(--card-body-font);
+    font-size: 0.7em;
+    color: var(--card-red);
+    line-height: 1;
+    letter-spacing: 0;
+}
+
+/* ============================================================
+   SHEET ITEMS
+   ============================================================ */
+.sheet-item {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin-bottom: 1.5mm;
+}
+
+/* .sheet-main-title {
+    font-family: var(--card-title-font);
+    font-size: 1.5em;
+    font-weight: 400;
+    text-align: center;
+    margin-bottom: 1mm;
+    line-height: 1.5;
+    letter-spacing: 0;
+}
+
+.sheet-sub-title {
+    font-family: var(--card-title-font);
+    font-size: 1.5em;
+    font-weight: 400;
+    text-align: center;
+    margin-bottom: 2mm;
+    line-height: 1.5;
+    letter-spacing: 0.2em;
+} */
+
+.sheet-section-title {
+    font-family: var(--card-title-font);
+    font-size: 1.05em;
+    font-weight: 400;
+    padding: 1.2mm 3mm;
+    /* background: var(--card-section-title-bg);
+            border-left: 2.5px solid var(--card-red); */
+    margin-bottom: 1.5mm;
+    margin-top: 1mm;
+    line-height: 1.6;
+    letter-spacing: 0;
+}
+
+/* —— 统一题目行 —— */
+.sheet-q-row {
+    display: flex;
+    align-items: flex-start;
+    padding: 0.8mm 0.5mm;
+    font-family: var(--card-body-font);
+    font-size: 1em;
+    line-height: 1.4;
+}
+
+.sheet-qnum {
+    font-family: var(--card-option-font);
+    font-weight: 400;
+    min-width: 2.8em;
+    text-align: right;
+    padding-right: 2mm;
+    flex-shrink: 0;
+    color: var(--card-text);
+}
+
+.sheet-q-body {
+    flex: 1;
+    min-width: 0;
+}
+
+/* —— 选择题 / 编号选填 —— */
+.sheet-options {
+    display: flex;
+    gap: 2.5mm;
+    flex-wrap: wrap;
+    align-items: center;
+    padding-top: 0.3em;
+}
+
+.sheet-option-box {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.7em;
+    height: 1.1em;
+    border: 1.2px solid var(--card-red);
+    /* border-radius: 1px; */
+    font-family: var(--card-option-font);
+    font-size: 0.7em;
+    font-weight: 400;
+    line-height: 1;
+    background: var(--card-option-bg);
+    color: var(--card-red);
+}
+
+/* —— 填空 —— */
+.sheet-fill-blanks {
+    display: flex;
+    gap: 8mm;
+    flex-wrap: wrap;
+    align-items: flex-end;
+}
+
+.sheet-fill-blank {
+    border-bottom: 1.2px solid var(--card-red);
+    width: 28mm;
+    height: 7mm;
+    flex-shrink: 0;
+    flex-grow: 0;
+}
+
+/* —— 横线 —— */
+.sheet-writing-line {
+    width: 100%;
+    border-bottom: 1px solid var(--card-red);
+    height: 9mm;
+}
+
+/* —— 解答空白 —— */
+.sheet-blank-inner {
+    width: 100%;
+}
+
+/* —— 分割线 —— */
+.sheet-hr {
+    border: none;
+    border-top: 1.5px solid var(--card-border);
+    margin: 2mm -3mm;
+}
+
+/* —— 文字 —— */
+.sheet-text {
+    font-family: var(--card-body-font);
+    font-size: 0.95em;
+    padding: 1mm 2mm;
+    line-height: 1.7;
+    letter-spacing: 0;
+}
+
+/* ============================================================
+   SHEET HEADER (第一栏页头)
+   ============================================================ */
+.sheet-header {
+    margin-bottom: 3mm;
+}
+
+.sheet-header-dots {
+    display: flex;
+    gap: 2mm;
+    margin-bottom: 3mm;
+}
+
+.sheet-header-dot {
+    width: 3.6mm;
+    height: 2.1mm;
+    background: #000;
+}
+
+.sheet-header-titles {
+    text-align: center;
+    margin-bottom: 4mm;
+}
+
+.sheet-header-title-main {
+    font-family: var(--card-title-font);
+    font-size: 1.6em;
+    font-weight: 400;
+    color: #000;
+    line-height: 1.5;
+}
+
+.sheet-header-title-sub {
+    font-family: var(--card-title-font);
+    font-size: 1.6em;
+    font-weight: 400;
+    color: #000;
+    line-height: 1.5;
+    /* letter-spacing: 0.2em; */
+}
+
+.sheet-header-info {
+    display: flex;
+    gap: 4mm;
+    margin-bottom: 4mm;
+}
+
+.sheet-header-left {
+    flex: 1;
+}
+
+.sheet-header-field {
+    display: flex;
+    align-items: center;
+    margin-bottom: 3mm;
+    font-family: var(--card-title-font);
+    font-size: 1em;
+    font-weight: 400;
+}
+
+.sheet-header-field-label {
+    white-space: nowrap;
+    margin-right: 3mm;
+    letter-spacing: 2mm;
+}
+
+.sheet-header-field-line {
+    flex: 1;
+    border-bottom: 1.5px solid var(--card-red);
+    height: 8mm;
+}
+
+.sheet-header-id-boxes {
+    display: flex;
+    gap: 0;
+}
+
+.sheet-header-id-box {
+    width: 6mm;
+    height: 7mm;
+    border: 1.5px solid red;
+    margin-right: -1.5px;
+}
+
+.sheet-header-barcode {
+    width: 50mm;
+    /* min-height: 28mm; */
+    border: 1.5px dashed var(--card-red);
+    border-radius: 3mm;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--card-title-font);
+    font-size: 1.1em;
+    color: var(--card-red);
+    letter-spacing: 3mm;
+    flex-shrink: 0;
+    padding-left: 2mm;
+}
+
+.sheet-header-notice {
+    height: 36mm;
+    position: relative;
+    border: 1.5px solid var(--card-red);
+    display: flex;
+    font-size: 0.72em;
+    color: var(--card-red);
+    line-height: 1.6;
+}
+
+.sheet-header-notice-left {
+    width: 26mm;
+    border-right: 1.5px solid var(--card-red);
+    padding: 2mm;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--card-title-font);
+    color: #000;
+    flex-shrink: 0;
+}
+
+.sheet-header-notice-left .fill-label {
+    writing-mode: vertical-lr;
+    font-size: 1.1em;
+    letter-spacing: 1mm;
+    margin-bottom: 1mm;
+    margin-top: 12px;
+}
+
+.sheet-header-notice-right {
+    flex: 1;
+    padding: 2mm 3mm;
+    font-family: var(--card-body-font);
+}
+
+.sheet-header-notice-right p {
+    /* margin-bottom: 0.5mm; */
+}
+
+.sheet-header-absence {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    gap: 1.5mm;
+    border-width: 1px 0px 0px 1px;
+    border-color: var(--card-red);
+    border-style: solid;
+    padding-left: 2mm;
+    font-size: 0.95em;
+    color: var(--card-red);
+}
+
+.sheet-header-absence-box {
+    display: inline-block;
+    width: 3.2mm;
+    height: 2.0mm;
+    border: 1.2px solid var(--card-red);
+}
+
+.sheet-fill-example {
+    display: flex;
+    align-items: center;
+    gap: 2mm;
+    margin: 1mm 0;
+}
+
+.sheet-fill-example-block {
+    width: 5mm;
+    height: 3mm;
+    background: #000;
+    border: 1px solid #000;
+}
+
+.sheet-fill-wrong-row {
+    display: flex;
+    gap: 1.5mm;
+}
+
+.sheet-fill-wrong-item {
+    width: 4.5mm;
+    height: 3mm;
+    border: 1px solid var(--card-red);
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8em;
+}
+
+/* ============================================================
+   PRINT
+   ============================================================ */
+@media print {
+    body * {
+        visibility: hidden
+    }
+
+    .print-container,
+    .print-container * {
+        visibility: visible
+    }
+
+    .print-container {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%
+    }
+
+    .sheet-page {
+        box-shadow: none;
+        margin: 0;
+        page-break-after: always
+    }
+
+    @page {
+        size: A3 landscape;
+        margin: 0
+    }
+}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+.toast-container {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 8px
+}
+
+.toast {
+    padding: 10px 18px;
+    border-radius: var(--gui-radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    color: #fff;
+    animation: toastIn .3s ease, toastOut .3s ease 2.5s forwards;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, .2)
+}
+
+.toast.success {
+    background: var(--gui-success)
+}
+
+.toast.error {
+    background: var(--gui-danger)
+}
+
+.toast.info {
+    background: var(--gui-accent)
+}
+
+@keyframes toastIn {
+    from {
+        opacity: 0;
+        transform: translateX(40px)
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0)
+    }
+}
+
+@keyframes toastOut {
+    from {
+        opacity: 1
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(-10px)
+    }
+}
+
+/* ============================================================
+   DROP OVERLAY
+   ============================================================ */
+.drop-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(8px)
+}
+
+.drop-overlay.active {
+    display: flex
+}
+
+.drop-box {
+    border: 3px dashed var(--gui-accent);
+    border-radius: 20px;
+    padding: 60px 80px;
+    text-align: center;
+    color: var(--gui-accent)
+}
+
+.drop-box svg {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px
+}
+
+.drop-box p {
+    font-size: 20px;
+    font-weight: 600
+}
+
+.drop-box span {
+    font-size: 14px;
+    color: var(--gui-text-dim);
+    margin-top: 8px;
+    display: block
+}
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9000;
+    backdrop-filter: blur(4px)
+}
+
+.modal-overlay.active {
+    display: flex
+}
+
+.modal {
+    background: var(--gui-surface);
+    border: 1px solid var(--gui-border);
+    border-radius: var(--gui-radius);
+    padding: 24px;
+    max-width: 620px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, .2)
+}
+
+.modal h3 {
+    font-size: 18px;
+    margin-bottom: 16px;
+    color: var(--gui-accent)
+}
+
+.modal pre {
+    background: var(--editor-bg);
+    color: var(--editor-text);
+    padding: 16px;
+    border-radius: var(--gui-radius-sm);
+    font-family: var(--editor-font);
+    font-size: 13px;
+    overflow-x: auto;
+    line-height: 1.7;
+    white-space: pre-wrap
+}
+
+.modal-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 16px
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media(max-width:900px) {
+    .main-area {
+        flex-direction: column
+    }
+
+    .editor-panel {
+        width: 100% !important;
+        min-width: unset;
+        height: 50%;
+        border-right: none;
+        border-bottom: 1px solid var(--gui-border)
+    }
+
+    .resizer {
+        display: none
+    }
+
+    .preview-panel {
+        flex: 1
+    }
+}
