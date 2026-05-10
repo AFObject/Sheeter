@@ -30,7 +30,7 @@
     --card-border: #000000;
     --card-title-font: 'Times New Roman', 'SimHei', 'Heiti SC', 'Microsoft YaHei', sans-serif;
     --card-body-font: 'Times New Roman', 'SimSun', 'Songti SC', serif;
-    --card-option-font: 'Times New Roman', 'SimSun', serif;
+    --card-option-font: 'SimHei', 'Times New Roman', 'SimSun', serif;
     --card-line-color: #ff0000;
     --card-red: #ff0000;
     --card-option-border: #ff0000;
@@ -501,6 +501,7 @@ body {
 } */
 
 .sheet-section-title {
+    text-align: center;
     font-family: var(--card-title-font);
     font-size: 1.05em;
     font-weight: 400;
@@ -524,7 +525,7 @@ body {
 }
 
 .sheet-qnum {
-    font-family: var(--card-option-font);
+    font-family: var(--card-body-font);
     font-weight: 400;
     min-width: 2.8em;
     text-align: right;
@@ -536,6 +537,18 @@ body {
 .sheet-q-body {
     flex: 1;
     min-width: 0;
+}
+
+/* ===== 同行并排（+ 标记） ===== */
+.sheet-row {
+    display: flex;
+    gap: 0;
+    width: 100%;
+}
+
+.sheet-row > .sheet-row-item {
+    flex: 1;
+    min-width: 0; /* 防止内容撑破 */
 }
 
 /* —— 选择题 / 编号选填 —— */
@@ -551,8 +564,8 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 1.7em;
-    height: 1.1em;
+    width: 1.4em;
+    height: 0.9em;
     border: 1.2px solid var(--card-red);
     /* border-radius: 1px; */
     font-family: var(--card-option-font);
@@ -573,8 +586,8 @@ body {
 
 .sheet-fill-blank {
     border-bottom: 1.2px solid var(--card-red);
-    width: 28mm;
-    height: 7mm;
+    width: 36mm;
+    height: 6mm;
     flex-shrink: 0;
     flex-grow: 0;
 }
@@ -708,7 +721,7 @@ body {
 }
 
 .sheet-header-notice {
-    height: 36mm;
+    /* height: 36mm; */
     position: relative;
     border: 1.5px solid var(--card-red);
     display: flex;

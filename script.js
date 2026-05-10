@@ -27,44 +27,45 @@ function parse(source) {
 
         // ### section
         m = line.match(/^###\s+(.+)/);
-        if (m) { tokens.push({ type: 'section', text: m[1].trim() }); continue; }
+        if (m) { tokens.push({ type: 'section', text: m[1].trim(), joinNext: false }); continue; }
 
         // ## subtitle
         m = line.match(/^##\s+(.+)/);
-        if (m) { tokens.push({ type: 'subtitle', text: m[1].trim() }); continue; }
+        if (m) { tokens.push({ type: 'subtitle', text: m[1].trim(), joinNext: false }); continue; }
 
         // # title
         m = line.match(/^#\s+(.+)/);
-        if (m) { tokens.push({ type: 'title', text: m[1].trim() }); continue; }
+        if (m) { tokens.push({ type: 'title', text: m[1].trim(), joinNext: false }); continue; }
 
         // === column break
-        if (/^={3,}\s*$/.test(line.trim())) { tokens.push({ type: 'colbreak' }); continue; }
+        if (/^={3,}\s*$/.test(line.trim())) { tokens.push({ type: 'colbreak', joinNext: false }); continue; }
 
         // --- hr
-        if (/^-{3,}\s*$/.test(line.trim())) { tokens.push({ type: 'hr' }); continue; }
+        if (/^-{3,}\s*$/.test(line.trim())) { tokens.push({ type: 'hr', joinNext: false }); continue; }
 
         // K-N
-        m = line.match(/^K-(\d+)\s*/i);
-        if (m) { tokens.push({ type: 'blankspace', lines: parseInt(m[1]), noNum: true }); continue; }
+        m = line.match(/^K-(\d+)\s*(\+)?\s*$/i);
+        if (m) { tokens.push({ type: 'blankspace', lines: parseInt(m[1]), noNum: true, joinNext: !!m[2] }); continue; }
 
-        // numbered items
-        m = line.match(/^([^.]+)\.\s*([A-Za-z])-(\d+)/);
+        // numbered items — 末尾可选 "+"
+        m = line.match(/^([^.]+)\.\s*([A-Za-z])-(\d+)\s*(\+)?\s*$/);
         if (m) {
             const num = m[1];
             const code = m[2].toUpperCase();
             const param = parseInt(m[3]);
+            const joinNext = !!m[4];
             switch (code) {
-                case 'X': tokens.push({ type: 'choice', num, count: param }); break;
-                case 'T': tokens.push({ type: 'fill', num, count: param }); break;
-                case 'L': tokens.push({ type: 'lines', num, count: param }); break;
-                case 'B': tokens.push({ type: 'numbered', num, count: param }); break;
-                case 'J': tokens.push({ type: 'blankspace', num, lines: param }); break;
-                default: tokens.push({ type: 'text', text: line });
+                case 'X': tokens.push({ type: 'choice', num, count: param, joinNext }); break;
+                case 'T': tokens.push({ type: 'fill', num, count: param, joinNext }); break;
+                case 'L': tokens.push({ type: 'lines', num, count: param, joinNext }); break;
+                case 'B': tokens.push({ type: 'numbered', num, count: param, joinNext }); break;
+                case 'J': tokens.push({ type: 'blankspace', num, lines: param, joinNext }); break;
+                default: tokens.push({ type: 'text', text: line, joinNext: false });
             }
             continue;
         }
 
-        tokens.push({ type: 'text', text: line });
+        tokens.push({ type: 'text', text: line, joinNext: false });
     }
 
     return { config: globalConfig, tokens };
@@ -151,6 +152,47 @@ function renderOneToken(tok) {
     }
 }
 
+/* ==============================================================
+   GROUP TOKENS INTO ROWS (handle "+" joinNext)
+   ============================================================== */
+function groupTokensIntoRows(tokens) {
+    // Returns an array of "render units".
+    // Each unit is either:
+    //   { grouped: false, token: tok }
+    //   { grouped: true, tokens: [tok1, tok2, ...] }
+    const units = [];
+    let i = 0;
+    while (i < tokens.length) {
+        if (tokens[i].joinNext) {
+            const group = [tokens[i]];
+            while (i < tokens.length && tokens[i].joinNext) {
+                i++;
+                if (i < tokens.length) {
+                    group.push(tokens[i]);
+                }
+            }
+            units.push({ grouped: true, tokens: group });
+        } else {
+            units.push({ grouped: false, token: tokens[i] });
+        }
+        i++;
+    }
+    return units;
+}
+
+function renderUnit(unit) {
+    if (!unit.grouped) {
+        return renderOneToken(unit.token);
+    }
+    // Render grouped tokens in a flex row
+    const inner = unit.tokens.map(tok => {
+        // Wrap each token's HTML in a flex child
+        const html = renderOneToken(tok);
+        return `<div class="sheet-row-item">${html}</div>`;
+    }).join('');
+    return `<div class="sheet-row">${inner}</div>`;
+}
+
 function esc(s) {
     const d = document.createElement('div');
     d.textContent = s;
@@ -181,7 +223,10 @@ function render() {
         return;
     }
 
-    // Step 1: measure each token's rendered height in a single-column context
+    // Group tokens into render units (handling "+" join)
+    const units = groupTokensIntoRows(tokens);
+
+    // Step 1: measure each unit's rendered height
     const measurer = buildPageSkeleton(fontSize, numCols, false, null);
     measurer.style.cssText += 'position:absolute;left:-99999px;top:0;visibility:hidden;';
     document.body.appendChild(measurer);
@@ -191,13 +236,14 @@ function render() {
     proxyCol.innerHTML = '';
 
     const heights = []; // { index, height, isColbreak, html }
-    for (let i = 0; i < tokens.length; i++) {
-        const tok = tokens[i];
-        if (tok.type === 'colbreak') {
+    for (let i = 0; i < units.length; i++) {
+        const unit = units[i];
+        // Check if this unit is a colbreak
+        if (!unit.grouped && unit.token.type === 'colbreak') {
             heights.push({ index: i, height: 0, isColbreak: true, html: '' });
             continue;
         }
-        const html = renderOneToken(tok);
+        const html = renderUnit(unit);
         proxyCol.innerHTML = html;
         const hBefore = proxyCol.scrollHeight;
         proxyCol.innerHTML = html + html;
@@ -209,14 +255,15 @@ function render() {
         proxyCol.innerHTML = '';
     }
 
+    document.body.removeChild(measurer);
+
     const testPage = buildPageSkeleton(fontSize, numCols);
     testPage.style.cssText += 'position:absolute;left:-99999px;top:0;visibility:hidden;';
     document.body.appendChild(testPage);
-    // 强制布局计算
     testPage.offsetHeight;
     const colEls = testPage.querySelectorAll('.sheet-col');
     const colHeight = colEls[0].getBoundingClientRect().height;
-
+    document.body.removeChild(testPage);
 
     // 测量第一页第一栏可用高度（有页头）
     const testPageFirst = buildPageSkeleton(fontSize, numCols, true, headerTitles);
@@ -227,7 +274,7 @@ function render() {
     document.body.removeChild(testPageFirst);
 
     // Step 2: bin-pack into columns → pages
-    const pages = []; // each page = array of numCols arrays of html strings
+    const pages = [];
     let currentPage = newPageCols(numCols);
     let currentColIdx = 0;
     let currentPageIdx = 0;
@@ -240,9 +287,7 @@ function render() {
     let currentColUsed = 0;
 
     for (const item of heights) {
-        // console.log(`item ${item.index}, height=${item.height}, token=${item.html}}`);
         if (item.isColbreak) {
-            // console.log(`Column break at token index ${item.index}`);
             currentColIdx++;
             if (currentColIdx >= numCols) {
                 pages.push(currentPage);
@@ -296,7 +341,6 @@ function newPageCols(n) {
 }
 
 function buildHeaderHTML(titles) {
-    // titles = { main: '...', sub: '...' } 从解析的 title/subtitle token 获取
     const mainTitle = titles.main || '';
     const subTitle = titles.sub || '';
 
@@ -523,9 +567,6 @@ function exportPDF() {
         pagesHtml += clone.outerHTML;
     });
 
-    // Extract only relevant styles (skip dark/light media queries for print — force light)
-    // const styleText = document.querySelector('style').textContent;
-
     printWin.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>答题卡</title>
     <link rel="stylesheet" href="style.css">
 <style>
@@ -575,31 +616,31 @@ function insertTemplate() {
 ## 物理 答题纸
 
 ### 一、光学实验
-1. X-4
+1. X-4 +
 2. X-4
 3. T-2
 ---
 ### 二、量子百年
-1. X-4
+1. X-4 +
 2. X-5
 3. T-1
 4. X-4
 ---
 ### 三、滑动变阻器
 1. T-2
-2 (1). X-4
+2 (1). X-4 +
 2 (2). T-1
 2 (3). X-4
 3. T-2
 ===
 ### 四、竖直圆轨道
-1. X-5
+1. X-5 +
 2. X-4
 3 (1). J-5
 3 (2). J-7
 ---
 ### 五、特雷门琴
-1 (1). X-3
+1 (1). X-3 +
 1 (2). X-4
 2 (1). T-1
 2 (2). X-4
