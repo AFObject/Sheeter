@@ -403,6 +403,9 @@ body {
     display: flex;
     position: relative;
     overflow: hidden;
+    margin-left: 30px;
+    margin-right: 30px;
+    /* margin-bottom: 18px; */
     gap: 3mm;
 }
 
@@ -422,13 +425,13 @@ body {
     display: flex;
     flex-direction: column;
     border: 1.5px solid var(--card-red);
-    border-radius: 4mm;
+    border-radius: 3.5mm;
     overflow: hidden;
 }
 
 .sheet-col-hint {
     font-family: var(--card-body-font);
-    font-size: 0.7em;
+    font-size: 11px;
     color: var(--card-red);
     text-align: center;
     padding: 0.6mm 1mm;
@@ -445,7 +448,7 @@ body {
 
 .sheet-col-hint-bottom {
     font-family: var(--card-body-font);
-    font-size: 0.7em;
+    font-size: 11px;
     color: var(--card-red);
     text-align: center;
     padding: 0.6mm 1mm;
@@ -463,12 +466,19 @@ body {
 .sheet-footer-mark {
     position: absolute;
     bottom: 5mm;
-    left: 10mm;
+    left: 20mm;
     font-family: var(--card-body-font);
-    font-size: 0.7em;
+    font-size: 11px;
     color: var(--card-red);
     line-height: 1;
     letter-spacing: 0;
+}
+
+.sheet-gray-detector {
+    padding: 2mm 2mm;
+    gap: 2mm;
+  display:flex;
+  flex-direction: row-reverse;
 }
 
 /* ============================================================
@@ -505,13 +515,23 @@ body {
     font-family: var(--card-title-font);
     font-size: 1.05em;
     font-weight: 400;
-    padding: 1.2mm 3mm;
+    padding: 1.2mm 2mm;
     /* background: var(--card-section-title-bg);
             border-left: 2.5px solid var(--card-red); */
-    margin-bottom: 1.5mm;
-    margin-top: 1mm;
+    margin-bottom: 1mm;
+    margin-top: 0.5mm;
     line-height: 1.6;
-    letter-spacing: 0;
+    letter-spacing: 0.05em;
+}
+
+.sheet-footer-dots {
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    bottom: 10mm;
+    left: 18mm;
+    right: 18mm;
+    gap: 2mm;
 }
 
 /* —— 统一题目行 —— */
@@ -527,7 +547,7 @@ body {
 .sheet-qnum {
     font-family: var(--card-body-font);
     font-weight: 400;
-    min-width: 2.8em;
+    min-width: 2.5em;
     text-align: right;
     padding-right: 2mm;
     flex-shrink: 0;
@@ -557,7 +577,7 @@ body {
     gap: 2.5mm;
     flex-wrap: wrap;
     align-items: center;
-    padding-top: 0.3em;
+    padding-top: 0.4em;
 }
 
 .sheet-option-box {
@@ -624,7 +644,7 @@ body {
    SHEET HEADER (第一栏页头)
    ============================================================ */
 .sheet-header {
-    margin-bottom: 3mm;
+    /* margin-bottom: 3mm; */
 }
 
 .sheet-header-dots {
@@ -634,7 +654,7 @@ body {
 }
 
 .sheet-header-dot {
-    width: 3.6mm;
+    width: 4.8mm;
     height: 2.1mm;
     background: #000;
 }
@@ -646,19 +666,20 @@ body {
 
 .sheet-header-title-main {
     font-family: var(--card-title-font);
-    font-size: 1.6em;
+    font-size: 1.5em;
     font-weight: 400;
     color: #000;
     line-height: 1.5;
+    letter-spacing: 0.05em;
 }
 
 .sheet-header-title-sub {
     font-family: var(--card-title-font);
-    font-size: 1.6em;
+    font-size: 1.5em;
     font-weight: 400;
     color: #000;
     line-height: 1.5;
-    /* letter-spacing: 0.2em; */
+    letter-spacing: 0.05em;
 }
 
 .sheet-header-info {
@@ -698,22 +719,22 @@ body {
 }
 
 .sheet-header-id-box {
-    width: 6mm;
+    width: 5.8mm;
     height: 7mm;
     border: 1.5px solid red;
     margin-right: -1.5px;
 }
 
 .sheet-header-barcode {
-    width: 50mm;
+    width: 46mm;
     /* min-height: 28mm; */
     border: 1.5px dashed var(--card-red);
     border-radius: 3mm;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: var(--card-title-font);
-    font-size: 1.1em;
+    font-family: var(--card-body-font);
+    font-size: 1em;
     color: var(--card-red);
     letter-spacing: 3mm;
     flex-shrink: 0;
@@ -725,15 +746,16 @@ body {
     position: relative;
     border: 1.5px solid var(--card-red);
     display: flex;
-    font-size: 0.72em;
+    font-size: 11px;
     color: var(--card-red);
-    line-height: 1.6;
+    line-height: 1.2;
+    gap: 3mm;
 }
 
 .sheet-header-notice-left {
     width: 26mm;
     border-right: 1.5px solid var(--card-red);
-    padding: 2mm;
+    padding: 1mm;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -753,7 +775,7 @@ body {
 
 .sheet-header-notice-right {
     flex: 1;
-    padding: 2mm 3mm;
+    padding: 1mm 2mm;
     font-family: var(--card-body-font);
 }
 
@@ -790,10 +812,10 @@ body {
 }
 
 .sheet-fill-example-block {
-    width: 5mm;
-    height: 3mm;
+    width: 3.8mm;
+    height: 2.2mm;
     background: #000;
-    border: 1px solid #000;
+    /* border: 1px solid #000; */
 }
 
 .sheet-fill-wrong-row {
@@ -802,14 +824,109 @@ body {
 }
 
 .sheet-fill-wrong-item {
-    width: 4.5mm;
-    height: 3mm;
+    width: 3.8mm;
+    height: 2.2mm;
     border: 1px solid var(--card-red);
     color: #000;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 0.8em;
+}
+
+/* ===== 定位十字符 ===== */
+.sheet-corner-mark {
+    position: absolute;
+    font-size: 18px;
+    line-height: 1;
+    color: black;
+    font-weight: 300;
+    font-family: 'NewComputerModernMath';
+    user-select: none;
+    z-index: 10;
+}
+
+.sheet-corner-bl {
+    bottom: 4.5mm;
+    left: 5mm;
+}
+
+.sheet-corner-br {
+    bottom: 4.5mm;
+    right: 5mm;
+}
+
+/* ===== 左侧检测栏（黑色方块，绝对定位） ===== */
+.sheet-left-markers {
+    position: absolute;
+    left: 5mm;
+    top: 0;
+    bottom: 0;
+    width: 4mm;
+}
+
+.sheet-side-marker {
+    position: absolute;
+    left: 0;
+    width: 3.5mm;
+    height: 3.2mm;
+    background: black;
+    border: 1px red solid;
+}
+
+/* ===== 左侧白色检测区（红色细框 + 竖排红字） ===== */
+.sheet-detect-zone {
+    position: absolute;
+    left: 11mm;
+    top: 18mm;
+    bottom: 16mm;
+    width: 3.5mm;
+    border: 0.3mm solid red;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.sheet-detect-zone-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15mm;
+    writing-mode: horizontal-tb;
+    text-orientation: upright;
+    font-size: 9px;
+    color: red;
+    letter-spacing: 0;
+    white-space: nowrap;
+}
+
+.sheet-detect-zone-inner span {
+    display: block;
+    writing-mode: horizontal-tb;
+}
+
+/* ===== 右侧检测方块（绝对定位） ===== */
+.sheet-right-markers {
+    position: absolute;
+    right: 5mm;
+    top: 18mm;
+    display: flex;
+    flex-direction: column;
+    gap: 12mm;
+    align-items: center;
+    width: 4mm;
+}
+
+.sheet-right-marker-line {
+    position: absolute;
+    width: 1.2mm;
+    top: 19mm;
+    height: 260mm;
+    background: black;
+    right: 12mm;
+    /* border: 1px red solid; */
 }
 
 /* ============================================================

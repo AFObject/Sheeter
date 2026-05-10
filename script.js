@@ -345,7 +345,7 @@ function buildHeaderHTML(titles) {
     const subTitle = titles.sub || '';
 
     let dots = '';
-    for (let i = 0; i < 24; i++) dots += '<div class="sheet-header-dot"></div>';
+    for (let i = 0; i < 21; i++) dots += '<div class="sheet-header-dot"></div>';
 
     let idBoxes = '';
     for (let i = 0; i < 9; i++) idBoxes += '<div class="sheet-header-id-box"></div>';
@@ -391,12 +391,19 @@ function buildHeaderHTML(titles) {
         </div>
       </div>
       <div class="sheet-header-notice-right">
-        <p>1. 答题前，考生先在答题纸正面准确填写姓名、准考证号，在答题纸反面准确填写姓名，认真核对条形码上的准考证号、姓名和科目是否有误，并将核对后的条形码粘贴于指定区域。</p>
-        <p>2. 选择题部分必须使用2B铅笔填涂，作图使用2B铅笔，其余题型使用黑色字迹的钢笔、水笔或圆珠笔书写，字体工整、笔迹清楚。</p>
-        <p>3. 考生应在各题目的答题区域内作答，超出答题区域书写的答案无效。</p>
-        <p>4. 保持纸面清洁，不折叠，不破损。</p>
+      <ol>
+        <li>答题前，考生先在答题纸正面准确填写姓名、准考证号，在答题纸反面准确填写姓名，认真核对条形码上的准考证号、姓名和科目是否有误，并将核对后的条形码粘贴于指定区域。</li>
+        <li>选择题部分必须使用2B铅笔填涂，作图使用2B铅笔，其余题型使用黑色字迹的钢笔、水笔或圆珠笔书写，字体工整、笔迹清楚。</li>
+        <li>考生应在各题目的答题区域内作答，超出答题区域书写的答案无效。</li>
+        <li>保持纸面清洁，不折叠，不破损。</li>
+        </ol>
         <span class="sheet-header-absence">缺考标记：<span class="sheet-header-absence-box"></span>（考生不准填涂）</span>
       </div>
+    </div>
+    <div class="sheet-gray-detector">
+    <div class="sheet-fill-example-block" style="background: black !important;"></div>
+    <div class="sheet-fill-example-block" style="background: #888 !important;"></div>
+    <div class="sheet-fill-example-block" style="background: #ddd !important;"></div>
     </div>
   </div>`;
 }
@@ -422,11 +429,41 @@ function buildPageSkeleton(fontSize, numCols, isFirstPage, headerTitles) {
       </div>
     </div>`;
     }
+    // 左侧检测栏黑色方块（约10个，均匀分布）
+    // 左侧检测栏黑色方块（手动指定每个方块的纵向位置，单位mm，从页面顶部算起）
+    const leftMarkerPositions = [18, 42, 50, 276];
+    let leftMarkers = '';
+    for (const pos of leftMarkerPositions) {
+        leftMarkers += `<div class="sheet-side-marker" style="top:${pos}mm;"></div>`;
+    }
+
+    // 左侧检测区红色竖框 + 文字
+    const detectText = '白色检测区，请勿污染！';
+    let detectChars = '';
+    for (const ch of detectText) {
+        detectChars += `<span>${ch}</span>`;
+    }
+    const leftDetectZone = `<div class="sheet-detect-zone">
+        <div class="sheet-detect-zone-inner">${detectChars}</div>
+    </div>`;
+    // 右侧黑色方块（底部2个）
+    let rightMarkers = '';
+    rightMarkers += `<div class="sheet-side-marker"></div>`;
+    
+    // let dots = '';
+    // for (let i = 0; i < 64; i++) dots += '<div class="sheet-header-dot"></div>';
 
     page.innerHTML = `
-    <div class="sheet-outer-frame">${colsHtml}</div>
-    <div class="sheet-footer-mark">上海市教育考试院设计与监制</div>
-  `;
+        <div class="sheet-corner-mark sheet-corner-bl">+</div>
+        <div class="sheet-corner-mark sheet-corner-br">+</div>
+        <div class="sheet-left-markers">${leftMarkers}</div>
+        ${leftDetectZone}
+        <div class="sheet-right-marker-line"></div>
+        <div class="sheet-right-markers">${rightMarkers}</div>
+        <div class="sheet-outer-frame">${colsHtml}</div>
+        <div class="sheet-footer-mark">上海市教育考试院设计与监制</div>
+    `;
+    // <div class="sheet-footer-dots">${dots}</div>
     return page;
 }
 
@@ -610,51 +647,105 @@ function exportMD() {
    TEMPLATE
    ============================================================== */
 function insertTemplate() {
-    editor.value = `#split 3
-#size 15
-# 2025 年上海市普通高中学业水平等级性考试
-## 物理 答题纸
+//     editor.value = `#split 3
+// #size 15
+// # 2025 年上海市普通高中学业水平等级性考试
+// ## 物理 答题纸
 
-### 一、光学实验
-1. X-4 +
-2. X-4
-3. T-2
----
-### 二、量子百年
-1. X-4 +
-2. X-5
-3. T-1
-4. X-4
----
-### 三、滑动变阻器
-1. T-2
+// ### 一、光学实验
+// 1. X-4 +
+// 2. X-4
+// 3. T-2
+// ---
+// ### 二、量子百年
+// 1. X-4 +
+// 2. X-5
+// 3. T-1
+// 4. X-4
+// ---
+// ### 三、滑动变阻器
+// 1. T-2
+// 2 (1). X-4 +
+// 2 (2). T-1
+// 2 (3). X-4
+// 3. T-2
+// ===
+// ### 四、竖直圆轨道
+// 1. X-5 +
+// 2. X-4
+// 3 (1). J-5
+// 3 (2). J-7
+// ---
+// ### 五、特雷门琴
+// 1 (1). X-3 +
+// 1 (2). X-4
+// 2 (1). T-1
+// 2 (2). X-4
+// 2 (3). T-2
+// 3. X-4
+// ===
+// ### 六、再生制动与气囊减震
+// 1. X-4
+// 2. J-5
+// 3 (1). J-5
+// 3 (2). J-6
+// 3 (3) (1). X-3
+// 3 (3) (2). J-4`;
+editor.value = `
+#split 3
+# 2026年普通高等学校招生全国统一考试
+## 语文 答题纸
+
+### 一　积累与运用
+1 (1). T-1
+(2). T-2
+(3). T-2
 2 (1). X-4 +
-2 (2). T-1
-2 (3). X-4
-3. T-2
-===
-### 四、竖直圆轨道
-1. X-5 +
-2. X-4
-3 (1). J-5
-3 (2). J-7
+(2). X-4
+----
+### 二　阅读
+3. X-4 +
+4. X-4 +
+5. X-4
 ---
-### 五、特雷门琴
-1 (1). X-3 +
-1 (2). X-4
-2 (1). T-1
-2 (2). X-4
-2 (3). T-2
-3. X-4
+6. L-4
+---
+7. L-5
 ===
-### 六、再生制动与气囊减震
-1. X-4
-2. J-5
-3 (1). J-5
-3 (2). J-6
-3 (3) (1). X-3
-3 (3) (2). J-4`;
-
+8.L-4
+---
+9.L-4
+---
+10.L-4
+---
+11.L-5
+K-1
+----
+12. X-4
+---
+13. L-5
+K-1
+===
+14 (1). T-1 +
+(2). T-1
+---
+15 (1). X-4 +
+(2). X-4
+16. X-4
+17. J-1
+---
+18. L-3
+---
+19. L-5
+K-1
+---
+20. X-4
+---
+21. L-4
+---
+22. L-5
+K-1
+`
     render();
     toast('success', '已插入示例模板');
 }
