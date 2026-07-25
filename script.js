@@ -47,19 +47,20 @@ function parse(source) {
         m = line.match(/^K-(\d+)\s*(\+)?\s*$/i);
         if (m) { tokens.push({ type: 'blankspace', lines: parseInt(m[1]), noNum: true, joinNext: !!m[2] }); continue; }
 
-        // numbered items — 末尾可选 "+"
-        m = line.match(/^([^.]+)\.\s*([A-Za-z])-(\d+)\s*(\+)?\s*$/);
+        // numbered items — 末尾可选 "+"，题号后可选 "(标注)"
+        m = line.match(/^([^.]+)\.\s*(?:\(([^)]*)\)\s*)?([A-Za-z])-(\d+)\s*(\+)?\s*$/);
         if (m) {
             const num = m[1];
-            const code = m[2].toUpperCase();
-            const param = parseInt(m[3]);
-            const joinNext = !!m[4];
+            const note = m[2] || '';   // 标注文本（可选）
+            const code = m[3].toUpperCase();
+            const param = parseInt(m[4]);
+            const joinNext = !!m[5];
             switch (code) {
-                case 'X': tokens.push({ type: 'choice', num, count: param, joinNext }); break;
-                case 'T': tokens.push({ type: 'fill', num, count: param, joinNext }); break;
-                case 'L': tokens.push({ type: 'lines', num, count: param, joinNext }); break;
-                case 'B': tokens.push({ type: 'numbered', num, count: param, joinNext }); break;
-                case 'J': tokens.push({ type: 'blankspace', num, lines: param, joinNext }); break;
+                case 'X': tokens.push({ type: 'choice', num, note, count: param, joinNext }); break;
+                case 'T': tokens.push({ type: 'fill', num, note, count: param, joinNext }); break;
+                case 'L': tokens.push({ type: 'lines', num, note, count: param, joinNext }); break;
+                case 'B': tokens.push({ type: 'numbered', num, note, count: param, joinNext }); break;
+                case 'J': tokens.push({ type: 'blankspace', num, note, lines: param, joinNext }); break;
                 default: tokens.push({ type: 'text', text: line, joinNext: false });
             }
             continue;
@@ -89,10 +90,12 @@ function renderOneToken(tok) {
             const L = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
             let o = '';
             for (let i = 0; i < tok.count; i++) o += `<span class="sheet-option-box">${L[i]}</span>`;
+            const noteHtml = tok.note ? `<span class="sheet-qnote">(${esc(tok.note)})</span>` : '';
             return `<div class="sheet-item sheet-q-row">
-        <span class="sheet-qnum">${tok.num}</span>
-        <span class="sheet-q-body"><span class="sheet-options">${o}</span></span>
-      </div>`;
+                <span class="sheet-qnum">${tok.num}</span>
+                ${noteHtml}
+                <span class="sheet-q-body"><span class="sheet-options">${o}</span></span>
+            </div>`;
         }
 
         case 'fill': {

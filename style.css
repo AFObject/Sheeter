@@ -434,14 +434,14 @@ body {
     font-size: 11px;
     color: var(--card-red);
     text-align: center;
-    padding: 0.6mm 1mm;
+    padding: 0.3mm 1mm;
     /* line-height: 1.3; */
     flex-shrink: 0;
 }
 
 .sheet-col-inner {
     flex: 1;
-    border: 1.5px solid var(--card-border);
+    border: 1.2px solid var(--card-border);
     margin: 0 1.2mm;
     overflow: hidden;
 }
@@ -451,7 +451,7 @@ body {
     font-size: 11px;
     color: var(--card-red);
     text-align: center;
-    padding: 0.6mm 1mm;
+    padding: 0.3mm 1mm;
     /* line-height: 1.3; */
     flex-shrink: 0;
 }
@@ -487,7 +487,7 @@ body {
 .sheet-item {
     break-inside: avoid;
     page-break-inside: avoid;
-    margin-bottom: 1.5mm;
+    margin-bottom: 0.5mm;
 }
 
 /* .sheet-main-title {
@@ -547,10 +547,12 @@ body {
 .sheet-qnum {
     font-family: var(--card-body-font);
     font-weight: 400;
+    font-size: 0.9em;
     min-width: 2.5em;
     text-align: right;
     padding-right: 2mm;
     flex-shrink: 0;
+    margin-top: 0.1em;
     color: var(--card-text);
 }
 
@@ -585,7 +587,7 @@ body {
     align-items: center;
     justify-content: center;
     width: 1.4em;
-    height: 0.9em;
+    height: 0.85em;
     border: 1.2px solid var(--card-red);
     /* border-radius: 1px; */
     font-family: var(--card-option-font);
@@ -607,7 +609,7 @@ body {
 .sheet-fill-blank {
     border-bottom: 1.2px solid var(--card-red);
     width: 36mm;
-    height: 6mm;
+    height: 8mm;
     flex-shrink: 0;
     flex-grow: 0;
 }
@@ -627,7 +629,7 @@ body {
 /* —— 分割线 —— */
 .sheet-hr {
     border: none;
-    border-top: 1.5px solid var(--card-border);
+    border-top: 1.2px solid var(--card-border);
     margin: 2mm -3mm;
 }
 
@@ -1141,4 +1143,15 @@ body {
     .preview-panel {
         flex: 1
     }
+}
+
+/* 0725 addition */
+.sheet-qnote {
+    font-family: 'SimSun';
+    padding-top: 0.15em;
+    margin: 0 0.4em 0 0em;
+    font-size: 0.8em;
+    color: #000;
+    white-space: nowrap;
+    align-items: center;
 }
