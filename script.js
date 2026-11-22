@@ -17,6 +17,8 @@ function parse(source) {
         if (line.trim() === '') continue;
         if (line.trim().startsWith('//')) continue;
 
+        if (line.trim() === '#sjtu') { globalConfig.sjtu = true; continue; }
+
         // #split
         let m = line.match(/^#split\s+(\d+)/i);
         if (m) { globalConfig.split = Math.max(1, Math.min(6, parseInt(m[1]))); continue; }
@@ -44,8 +46,8 @@ function parse(source) {
         if (/^-{3,}\s*$/.test(line.trim())) { tokens.push({ type: 'hr', joinNext: false }); continue; }
 
         // K-N
-        m = line.match(/^K-(\d+)\s*(\+)?\s*$/i);
-        if (m) { tokens.push({ type: 'blankspace', lines: parseInt(m[1]), noNum: true, joinNext: !!m[2] }); continue; }
+        m = line.match(/^K-(\d+(?:\.\d+)?|\.\d+)\s*(\+)?\s*$/i);
+        if (m) { tokens.push({ type: 'blankspace', lines: Number(m[1]), noNum: true, joinNext: !!m[2] }); continue; }
 
         // numbered items — 末尾可选 "+"，题号后可选 "(标注)"
         m = line.match(/^([^.]+)\.\s*(?:\(([^)]*)\)\s*)?(?:([XxTtLlBbJj])-(\d+)|([Pp]))\s*(\+)?\s*$/);
@@ -215,7 +217,7 @@ function render() {
     const source = document.getElementById('editor').value;
     const { config, tokens } = parse(source);
     // 提取标题用于页头，从 tokens 中移除
-    const headerTitles = { main: '', sub: '' };
+    const headerTitles = { main: '', sub: '', sjtu: config.sjtu };
     for (let i = tokens.length - 1; i >= 0; i--) {
         if (tokens[i].type === 'title') { headerTitles.main = tokens[i].text; tokens.splice(i, 1); }
         if (tokens[i].type === 'subtitle') { headerTitles.sub = tokens[i].text; tokens.splice(i, 1); }
@@ -226,7 +228,9 @@ function render() {
     container.innerHTML = '';
 
     if (tokens.length === 0) {
-        container.appendChild(buildEmptyPage(fontSize, numCols));
+        container.appendChild(config.sjtu
+            ? buildPageSkeleton(fontSize, numCols, true, headerTitles)
+            : buildEmptyPage(fontSize, numCols));
         applyZoom();
         return;
     }
@@ -354,7 +358,7 @@ function dots(n) {
     return dots;
 }
 
-function buildHeaderHTML(titles) {
+function buildHeaderHTML(titles, numCols) {
     const mainTitle = titles.main || '';
     const subTitle = titles.sub || '';
 
@@ -364,30 +368,28 @@ function buildHeaderHTML(titles) {
         return idBoxes;
     }
 
+    const fields = titles.sjtu
+        ? [['学号', 12], ['班级', 6]]
+        : [['报名号', 12], ['考场号', 8], ['座位号', 2]];
+    const fieldRows = fields.map(([label, count]) => `
+        <div class="sheet-header-field" style="margin-top:2mm;">
+          <span class="sheet-header-field-label">${label}</span>
+          <div class="sheet-header-id-boxes">${idBox(count)}</div>
+        </div>`).join('');
+
     return `<div class="sheet-header">
-    <div class="sheet-header-dots">${dots(21)}</div>
+    <div class="sheet-header-dots">${dots(numCols <= 2 ? Math.ceil(60 / numCols) : 21)}</div>
     <div class="sheet-header-titles">
       <div class="sheet-header-title-main">${esc(mainTitle)}</div>
       <div class="sheet-header-title-sub">${esc(subTitle)}</div>
     </div>
-    <div class="sheet-header-info">
+    <div class="sheet-header-info${titles.sjtu ? ' sheet-header-info-sjtu' : ''}">
       <div class="sheet-header-left">
         <div class="sheet-header-field">
           <span class="sheet-header-field-label">姓\u2003名</span>
           <span class="sheet-header-field-line"></span>
         </div>
-        <div class="sheet-header-field" style="margin-top:2mm;">
-          <span class="sheet-header-field-label">报名号</span>
-          <div class="sheet-header-id-boxes">${idBox(12)}</div>
-        </div>
-        <div class="sheet-header-field" style="margin-top:2mm;">
-          <span class="sheet-header-field-label">考场号</span>
-          <div class="sheet-header-id-boxes">${idBox(8)}</div>
-        </div>
-        <div class="sheet-header-field" style="margin-top:2mm;">
-          <span class="sheet-header-field-label">座位号</span>
-          <div class="sheet-header-id-boxes">${idBox(2)}</div>
-        </div>
+        ${fieldRows}
       </div>
       <div class="sheet-header-barcode">粘贴条形码区</div>
     </div>
@@ -439,7 +441,7 @@ function buildPageSkeleton(fontSize, numCols, isFirstPage, headerTitles) {
 
     let colsHtml = '';
     for (let i = 0; i < numCols; i++) {
-        const headerPart = (isFirstPage && i === 0 && headerTitles) ? buildHeaderHTML(headerTitles) : '';
+        const headerPart = (isFirstPage && i === 0 && headerTitles) ? buildHeaderHTML(headerTitles, numCols) : '';
         colsHtml += `<div class="sheet-col-outer">
       ${headerPart}
       <div class="sheet-col-wrap">

@@ -673,6 +673,10 @@ body {
     background: #000;
 }
 
+.sheet-header-dots > .sheet-header-dot {
+    flex-grow: 1;
+}
+
 .sheet-header-titles {
     text-align: center;
     margin-bottom: 4mm;
@@ -756,6 +760,10 @@ body {
     letter-spacing: 3mm;
     flex-shrink: 0;
     padding-left: 2mm;
+}
+
+.sheet-header-info-sjtu .sheet-header-barcode {
+    margin-top: 0;
 }
 
 .sheet-header-notice {
