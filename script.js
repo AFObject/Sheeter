@@ -62,7 +62,7 @@ function parse(source) {
                 case 'P':
                     tokens.push({ type: 'choice', num, note, labels: 'TF', count: 2, joinNext });
                     break;
-                case 'X': tokens.push({ type: 'choice', num, note, count: param, joinNext }); break;
+                case 'X': tokens.push({ type: 'choice', num, note, count: Math.min(param, 26), joinNext }); break;
                 case 'T': tokens.push({ type: 'fill', num, note, count: param, joinNext }); break;
                 case 'L': tokens.push({ type: 'lines', num, note, count: param, joinNext }); break;
                 case 'B': tokens.push({ type: 'numbered', num, note, count: param, joinNext }); break;
@@ -215,13 +215,15 @@ function esc(s) {
    with === column breaks and overflow → next page
    ============================================================== */
 function render() {
+    clearTimeout(debounceTimer);
+    debounceTimer = null;
     const source = document.getElementById('editor').value;
     const { config, tokens } = parse(source);
     // 提取标题用于页头，从 tokens 中移除
     const headerTitles = { main: '', sub: '', sjtu: config.sjtu };
     for (let i = tokens.length - 1; i >= 0; i--) {
         if (tokens[i].type === 'title') { headerTitles.main = tokens[i].text; tokens.splice(i, 1); }
-        if (tokens[i].type === 'subtitle') { headerTitles.sub = tokens[i].text; tokens.splice(i, 1); }
+        else if (tokens[i].type === 'subtitle') { headerTitles.sub = tokens[i].text; tokens.splice(i, 1); }
     }
     const fontSize = config.size || 15;
     const numCols = config.split || 3;
@@ -229,7 +231,8 @@ function render() {
     container.innerHTML = '';
 
     if (tokens.length === 0) {
-        container.appendChild(buildPageSkeleton(fontSize, numCols, config.sjtu, headerTitles, config.hideBranding));
+        const showHeader = config.sjtu || headerTitles.main !== '';
+        container.appendChild(buildPageSkeleton(fontSize, numCols, showHeader, headerTitles, config.hideBranding));
         applyZoom();
         return;
     }
@@ -525,11 +528,40 @@ function zoomFit() {
    EDITOR
    ============================================================== */
 const editor = document.getElementById('editor');
+const draftKey = 'sheeter:draft';
+let draftSaveFailed = false;
 
-editor.addEventListener('input', () => {
+function saveDraft() {
+    try {
+        localStorage.setItem(draftKey, editor.value);
+        draftSaveFailed = false;
+    } catch {
+        if (!draftSaveFailed) toast('error', '无法自动保存草稿，请导出 MD 保留内容');
+        draftSaveFailed = true;
+    }
+}
+
+function loadDraft() {
+    try {
+        return localStorage.getItem(draftKey);
+    } catch {
+        return null;
+    }
+}
+
+function replaceDraft(value) {
+    editor.value = value;
+    saveDraft();
+    render();
+}
+
+function scheduleEditorUpdate(delay) {
+    saveDraft();
     clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(render, 200);
-});
+    debounceTimer = setTimeout(render, delay);
+}
+
+editor.addEventListener('input', () => scheduleEditorUpdate(200));
 
 editor.addEventListener('keyup', updateLineInfo);
 editor.addEventListener('click', updateLineInfo);
@@ -549,8 +581,7 @@ editor.addEventListener('keydown', (e) => {
         const s = editor.selectionStart, end = editor.selectionEnd;
         editor.value = editor.value.substring(0, s) + '  ' + editor.value.substring(end);
         editor.selectionStart = editor.selectionEnd = s + 2;
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(render, 150);
+        scheduleEditorUpdate(150);
     }
 });
 
@@ -601,7 +632,7 @@ document.addEventListener('drop', (e) => {
     const file = e.dataTransfer.files[0];
     if (file && (file.name.endsWith('.md') || file.name.endsWith('.txt'))) {
         const reader = new FileReader();
-        reader.onload = (ev) => { editor.value = ev.target.result; render(); toast('success', `已加载: ${file.name}`); };
+        reader.onload = (ev) => { replaceDraft(ev.target.result); toast('success', `已加载: ${file.name}`); };
         reader.readAsText(file);
     } else {
         toast('error', '请拖入 .md 或 .txt 文件');
@@ -613,6 +644,8 @@ document.addEventListener('drop', (e) => {
    ============================================================== */
 function exportPDF() {
     const printWin = window.open('', '_blank');
+    if (!printWin) { toast('error', '无法打开打印窗口，请允许弹出窗口后重试'); return; }
+    if (debounceTimer !== null) render();
     const pages = document.querySelectorAll('#previewContainer .sheet-page');
     let pagesHtml = '';
     pages.forEach((p, i) => {
@@ -767,7 +800,7 @@ function insertTemplate() {
 // 22. L-5
 // K-1
 // `
-editor.value = `
+    const template = `
 # 2024年上海市普通高中学业水平等级性考试
 ## 化学　答题纸
 ### 一　氟及其化合物
@@ -858,7 +891,7 @@ editor.value = `
 ---
 8. L-3
 `
-    render();
+    replaceDraft(template);
     toast('success', '已插入示例模板');
 }
 
@@ -867,8 +900,7 @@ editor.value = `
    ============================================================== */
 function clearEditor() {
     if (editor.value.trim() && !confirm('确定清空？')) return;
-    editor.value = '';
-    render();
+    replaceDraft('');
     toast('info', '已清空');
 }
 
@@ -888,5 +920,14 @@ function toast(type, msg) {
 /* ==============================================================
    INIT
    ============================================================== */
-window.addEventListener('load', () => { setTimeout(zoomFit, 100); render(); insertTemplate(); });
+window.addEventListener('load', () => {
+    setTimeout(zoomFit, 100);
+    const draft = loadDraft();
+    if (draft === null) {
+        insertTemplate();
+    } else {
+        editor.value = draft;
+        render();
+    }
+});
 window.addEventListener('resize', () => { clearTimeout(window._rzT); window._rzT = setTimeout(zoomFit, 200); });
