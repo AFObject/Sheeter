@@ -18,7 +18,7 @@ function parse(source) {
         if (line.trim().startsWith('//')) continue;
 
         if (line.trim() === '#sjtu') { globalConfig.sjtu = true; continue; }
-        if (line.trim() === '#ssjhtsu') { globalConfig.hideFooterCredit = true; continue; }
+        if (line.trim() === '#ssjhtsu') { globalConfig.hideBranding = true; continue; }
 
         // #split
         let m = line.match(/^#split\s+(\d+)/i);
@@ -229,7 +229,7 @@ function render() {
     container.innerHTML = '';
 
     if (tokens.length === 0) {
-        container.appendChild(buildPageSkeleton(fontSize, numCols, config.sjtu, headerTitles, config.hideFooterCredit));
+        container.appendChild(buildPageSkeleton(fontSize, numCols, config.sjtu, headerTitles, config.hideBranding));
         applyZoom();
         return;
     }
@@ -332,7 +332,7 @@ function render() {
     for (let pi = 0; pi < pages.length; pi++) {
         const pageCols = pages[pi];
         const isFirst = (pi === 0);
-        const pageEl = buildPageSkeleton(fontSize, numCols, isFirst, headerTitles, config.hideFooterCredit);
+        const pageEl = buildPageSkeleton(fontSize, numCols, isFirst, headerTitles, config.hideBranding);
         const cols = pageEl.querySelectorAll('.sheet-col');
         for (let c = 0; c < numCols; c++) {
             if (pageCols[c]) {
@@ -431,9 +431,9 @@ function buildHeaderHTML(titles, numCols) {
   </div>`;
 }
 
-function buildPageSkeleton(fontSize, numCols, isFirstPage, headerTitles, hideFooterCredit = false) {
+function buildPageSkeleton(fontSize, numCols, isFirstPage, headerTitles, hideBranding = false) {
     const page = document.createElement('div');
-    page.className = 'sheet-page';
+    page.className = hideBranding ? 'sheet-page sheet-page--hide-branding' : 'sheet-page';
     page.style.fontSize = fontSize + 'px';
 
     const hintText = '请在各题目的答题区域内作答，超出矩形边框限定区域的答案无效';
@@ -486,7 +486,7 @@ function buildPageSkeleton(fontSize, numCols, isFirstPage, headerTitles, hideFoo
         <div class="sheet-outer-frame">${colsHtml}</div>
         <div class="sheet-footer-dots">${dots(60)}</div>
         <div class="sheet-footer-mark">上海市教育考试院设计与监制</div>
-        ${hideFooterCredit ? '' : '<div class="sheet-footer-mark-2">#6B50EF 排版与制作</div>'}
+        ${hideBranding ? '' : '<div class="sheet-footer-mark-2">#6B50EF 排版与制作</div>'}
     `;
     // <div class="sheet-footer-dots">${dots}</div>
     return page;

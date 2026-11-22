@@ -1184,7 +1184,7 @@ body {
     align-items: center;
 }
 /* ===== 斜向重复水印 ===== */
-.sheet-page::before {
+.sheet-page:not(.sheet-page--hide-branding)::before {
     content: '';
     position: absolute;
     inset: 0;
