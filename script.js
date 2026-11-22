@@ -369,7 +369,7 @@ function buildHeaderHTML(titles, numCols) {
     }
 
     const fields = titles.sjtu
-        ? [['学号', 12], ['班级', 6]]
+        ? [['学\u2003号', 12], ['班\u2003级', 6]]
         : [['报名号', 12], ['考场号', 8], ['座位号', 2]];
     const fieldRows = fields.map(([label, count]) => `
         <div class="sheet-header-field" style="margin-top:2mm;">
