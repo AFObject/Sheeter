@@ -18,6 +18,7 @@ function parse(source) {
         if (line.trim().startsWith('//')) continue;
 
         if (line.trim() === '#sjtu') { globalConfig.sjtu = true; continue; }
+        if (line.trim() === '#ssjhtsu') { globalConfig.hideFooterCredit = true; continue; }
 
         // #split
         let m = line.match(/^#split\s+(\d+)/i);
@@ -228,9 +229,7 @@ function render() {
     container.innerHTML = '';
 
     if (tokens.length === 0) {
-        container.appendChild(config.sjtu
-            ? buildPageSkeleton(fontSize, numCols, true, headerTitles)
-            : buildEmptyPage(fontSize, numCols));
+        container.appendChild(buildPageSkeleton(fontSize, numCols, config.sjtu, headerTitles, config.hideFooterCredit));
         applyZoom();
         return;
     }
@@ -333,7 +332,7 @@ function render() {
     for (let pi = 0; pi < pages.length; pi++) {
         const pageCols = pages[pi];
         const isFirst = (pi === 0);
-        const pageEl = buildPageSkeleton(fontSize, numCols, isFirst, isFirst ? headerTitles : null);
+        const pageEl = buildPageSkeleton(fontSize, numCols, isFirst, headerTitles, config.hideFooterCredit);
         const cols = pageEl.querySelectorAll('.sheet-col');
         for (let c = 0; c < numCols; c++) {
             if (pageCols[c]) {
@@ -432,7 +431,7 @@ function buildHeaderHTML(titles, numCols) {
   </div>`;
 }
 
-function buildPageSkeleton(fontSize, numCols, isFirstPage, headerTitles) {
+function buildPageSkeleton(fontSize, numCols, isFirstPage, headerTitles, hideFooterCredit = false) {
     const page = document.createElement('div');
     page.className = 'sheet-page';
     page.style.fontSize = fontSize + 'px';
@@ -487,14 +486,10 @@ function buildPageSkeleton(fontSize, numCols, isFirstPage, headerTitles) {
         <div class="sheet-outer-frame">${colsHtml}</div>
         <div class="sheet-footer-dots">${dots(60)}</div>
         <div class="sheet-footer-mark">上海市教育考试院设计与监制</div>
-        <div class="sheet-footer-mark-2">#6B50EF 排版与制作</div>
+        ${hideFooterCredit ? '' : '<div class="sheet-footer-mark-2">#6B50EF 排版与制作</div>'}
     `;
     // <div class="sheet-footer-dots">${dots}</div>
     return page;
-}
-
-function buildEmptyPage(fontSize, numCols) {
-    return buildPageSkeleton(fontSize, numCols, false, null);
 }
 
 /* ==============================================================
