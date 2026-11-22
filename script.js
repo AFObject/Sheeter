@@ -100,9 +100,10 @@ function renderOneToken(tok) {
 
         case 'fill': {
             let b = '';
+            const noteHtml = tok.note ? `<span class="sheet-qnote" style="padding-top: 12px">${esc(tok.note)}</span>` : '';
             for (let i = 0; i < tok.count; i++) b += `<span class="sheet-fill-blank"></span>`;
-            return `<div class="sheet-item sheet-q-row">
-        <span class="sheet-qnum">${tok.num}</span>
+            return `<div class="sheet-item sheet-q-row" style="margin-top: -12px">
+        <span class="sheet-qnum" style="padding-top: 12px">${tok.num}</span>${noteHtml}
         <span class="sheet-q-body"><span class="sheet-fill-blanks">${b}</span></span>
       </div>`;
         }
@@ -110,8 +111,9 @@ function renderOneToken(tok) {
         case 'lines': {
             let lh = '';
             for (let i = 0; i < tok.count; i++) lh += `<div class="sheet-writing-line"></div>`;
-            return `<div class="sheet-item sheet-q-row">
-        <span class="sheet-qnum">${tok.num}</span>
+            const noteHtml = tok.note ? `<span class="sheet-qnote" style="padding-top: 13px">${esc(tok.note)}</span>` : '';
+            return `<div class="sheet-item sheet-q-row" style="margin-top: -6px;">
+        <span class="sheet-qnum" style="padding-top: 10px">${tok.num}</span>${noteHtml}
         <span class="sheet-q-body">${lh}</span>
       </div>`;
         }
@@ -343,18 +345,24 @@ function newPageCols(n) {
     return arr;
 }
 
+function dots(n) {
+    let dots = '';
+    for (let i = 0; i < n; i++) dots += '<div class="sheet-header-dot"></div>';
+    return dots;
+}
+
 function buildHeaderHTML(titles) {
     const mainTitle = titles.main || '';
     const subTitle = titles.sub || '';
 
-    let dots = '';
-    for (let i = 0; i < 21; i++) dots += '<div class="sheet-header-dot"></div>';
-
-    let idBoxes = '';
-    for (let i = 0; i < 9; i++) idBoxes += '<div class="sheet-header-id-box"></div>';
+    function idBox(n) {
+        let idBoxes = '';
+        for (let i = 0; i < n; i++) idBoxes += '<div class="sheet-header-id-box"></div>';
+        return idBoxes;
+    }
 
     return `<div class="sheet-header">
-    <div class="sheet-header-dots">${dots}</div>
+    <div class="sheet-header-dots">${dots(21)}</div>
     <div class="sheet-header-titles">
       <div class="sheet-header-title-main">${esc(mainTitle)}</div>
       <div class="sheet-header-title-sub">${esc(subTitle)}</div>
@@ -362,19 +370,27 @@ function buildHeaderHTML(titles) {
     <div class="sheet-header-info">
       <div class="sheet-header-left">
         <div class="sheet-header-field">
-          <span class="sheet-header-field-label">姓\u2003\u2003名</span>
+          <span class="sheet-header-field-label">姓\u2003名</span>
           <span class="sheet-header-field-line"></span>
         </div>
-        <div class="sheet-header-field" style="margin-top:4mm;">
-          <span class="sheet-header-field-label">准考证号</span>
-          <div class="sheet-header-id-boxes">${idBoxes}</div>
+        <div class="sheet-header-field" style="margin-top:2mm;">
+          <span class="sheet-header-field-label">报名号</span>
+          <div class="sheet-header-id-boxes">${idBox(12)}</div>
+        </div>
+        <div class="sheet-header-field" style="margin-top:2mm;">
+          <span class="sheet-header-field-label">考场号</span>
+          <div class="sheet-header-id-boxes">${idBox(8)}</div>
+        </div>
+        <div class="sheet-header-field" style="margin-top:2mm;">
+          <span class="sheet-header-field-label">座位号</span>
+          <div class="sheet-header-id-boxes">${idBox(2)}</div>
         </div>
       </div>
       <div class="sheet-header-barcode">粘贴条形码区</div>
     </div>
     <div class="sheet-header-notice">
       <div class="sheet-header-notice-left">
-        <div style="display:flex;align-items:flex-start;gap:2mm;">
+        <div style="display:flex;align-items:flex-start;gap:2mm;color:red;">
           <div class="fill-label">填涂样例</div>
           <div style="align-items: center; display:  flex; flex-direction: column;">
             <div style="font-size:0.85em;margin-bottom:1mm;">正确填涂</div>
@@ -388,7 +404,7 @@ function buildHeaderHTML(titles) {
             <div class="sheet-fill-wrong-row" style="margin-top:1mm;">
               <div class="sheet-fill-wrong-item">●</div>
               <div class="sheet-fill-wrong-item">☐</div>
-              <div class="sheet-fill-wrong-item">□</div>
+              <div class="sheet-fill-wrong-item">⬭</div>
             </div>
           </div>
         </div>
@@ -398,7 +414,7 @@ function buildHeaderHTML(titles) {
         <li>答题前，考生先在答题纸正面准确填写姓名、准考证号，在答题纸反面准确填写姓名，认真核对条形码上的准考证号、姓名和科目是否有误，并将核对后的条形码粘贴于指定区域。</li>
         <li>选择题部分必须使用2B铅笔填涂，作图使用2B铅笔，其余题型使用黑色字迹的钢笔、水笔或圆珠笔书写，字体工整、笔迹清楚。</li>
         <li>考生应在各题目的答题区域内作答，超出答题区域书写的答案无效。</li>
-        <li>保持纸面清洁，不折叠，不破损。</li>
+        <li>保持纸面清洁，不折叠、不破损。</li>
         </ol>
         <span class="sheet-header-absence">缺考标记：<span class="sheet-header-absence-box"></span>（考生不准填涂）</span>
       </div>
@@ -464,7 +480,9 @@ function buildPageSkeleton(fontSize, numCols, isFirstPage, headerTitles) {
         <div class="sheet-right-marker-line"></div>
         <div class="sheet-right-markers">${rightMarkers}</div>
         <div class="sheet-outer-frame">${colsHtml}</div>
+        <div class="sheet-footer-dots">${dots(60)}</div>
         <div class="sheet-footer-mark">上海市教育考试院设计与监制</div>
+        <div class="sheet-footer-mark-2">#6B50EF 排版与制作</div>
     `;
     // <div class="sheet-footer-dots">${dots}</div>
     return page;
@@ -694,60 +712,151 @@ function insertTemplate() {
 // 3 (2). J-6
 // 3 (3) (1). X-3
 // 3 (3) (2). J-4`;
-editor.value = `
-#split 3
-# 2026年普通高等学校招生全国统一考试
-## 语文 答题纸
+// editor.value = `
+// #split 3
+// # 2026年普通高等学校招生全国统一考试
+// ## 语文 答题纸
 
-### 一　积累与运用
-1 (1). T-1
-(2). T-2
-(3). T-2
-2 (1). X-4 +
+// ### 一　积累与运用
+// 1 (1). T-1
+// (2). T-2
+// (3). T-2
+// 2 (1). X-4 +
+// (2). X-4
+// ----
+// ### 二　阅读
+// 3. X-4 +
+// 4. X-4 +
+// 5. X-4
+// ---
+// 6. L-4
+// ---
+// 7. L-5
+// ===
+// 8.L-4
+// ---
+// 9.L-4
+// ---
+// 10.L-4
+// ---
+// 11.L-5
+// K-1
+// ----
+// 12. X-4
+// ---
+// 13. L-5
+// K-1
+// ===
+// 14 (1). T-1 +
+// (2). T-1
+// ---
+// 15 (1). X-4 +
+// (2). X-4
+// 16. X-4
+// 17. J-1
+// ---
+// 18. L-3
+// ---
+// 19. L-5
+// K-1
+// ---
+// 20. X-4
+// ---
+// 21. L-4
+// ---
+// 22. L-5
+// K-1
+// `
+editor.value = `
+# 2024年上海市普通高中学业水平等级性考试
+## 化学　答题纸
+### 一　氟及其化合物
+1. X-4 +
+2. (不定项)X-4
+----
+3 (1). L-1
 (2). X-4
 ----
-### 二　阅读
-3. X-4 +
-4. X-4 +
-5. X-4
+4. T-1 +
+ .T-1
 ---
-6. L-4
----
-7. L-5
-===
-8.L-4
----
-9.L-4
----
-10.L-4
----
-11.L-5
-K-1
+5. L-2
 ----
-12. X-4
+6. X-4 +
+7. (不定项)X-4
+----
+8. T-1
+----
+### 二　粗盐水的精制
+1. X-4
+----
+2. L-2
 ---
-13. L-5
-K-1
+3. L-1
+---
+4. (不定项)X-4
 ===
-14 (1). T-1 +
-(2). T-1
+5. T-1
 ---
-15 (1). X-4 +
+6. X-4
+---
+7 (1). L-1
+(2). L-1
+---
+8. J-6
+---
+### 三　溴化铝的结构和性质
+1. X-4 +
+2 (1). X-3
+---
+2 (2). T-1 +
+2 (3). X-4
+---
+3. L-1
+---
+4. X-4
+---
+5. L-1 +
+ .T-0
+---
+6. L-2
+---
+7 (1). L-2
+---
 (2). X-4
-16. X-4
-17. J-1
+----
+### 四　降血糖药物瑞格列奈
+1. X-4 + 
+2. X-4
+===
+3. T-1
 ---
-18. L-3
+4. J-1 + 
+5. J-1
+ .L-1 +
+ .L-1
 ---
-19. L-5
-K-1
+6 (1). X-4 + 
+(2). X-4
 ---
-20. X-4
+7. L-2
 ---
-21. L-4
+8. J-7
+----
+### 五　珊瑚礁的形成与保护
+1. X-4 +
+2. X-4
+3. (不定项)X-4
 ---
-22. L-5
-K-1
+4. L-2
+---
+5. T-1 +
+ .T-1
+6. X-4
+---
+7. L-1
+---
+8. L-3
 `
     render();
     toast('success', '已插入示例模板');

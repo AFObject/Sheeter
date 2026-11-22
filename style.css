@@ -106,7 +106,7 @@ body {
     gap: 8px;
     padding: 10px 16px;
     background: var(--gui-surface);
-    border-bottom: 1px solid var(--gui-border);
+    border-bottom: 0.26mm solid var(--gui-border);
     flex-shrink: 0;
     z-index: 100;
     flex-wrap: wrap
@@ -146,7 +146,7 @@ body {
     font-weight: 500;
     color: var(--gui-text);
     background: var(--gui-surface2);
-    border: 1px solid var(--gui-border);
+    border: 0.26mm solid var(--gui-border);
     border-radius: var(--gui-radius-sm);
     cursor: pointer;
     transition: all .2s;
@@ -191,7 +191,7 @@ body {
 .toolbar-hint kbd {
     padding: 1px 5px;
     background: var(--gui-surface2);
-    border: 1px solid var(--gui-border);
+    border: 0.26mm solid var(--gui-border);
     border-radius: 3px;
     font-size: 11px;
     font-family: var(--editor-font)
@@ -210,7 +210,7 @@ body {
     display: flex;
     flex-direction: column;
     background: var(--editor-bg);
-    border-right: 1px solid var(--gui-border)
+    border-right: 0.26mm solid var(--gui-border)
 }
 
 .editor-header {
@@ -219,7 +219,7 @@ body {
     justify-content: space-between;
     padding: 8px 16px;
     background: var(--gui-surface);
-    border-bottom: 1px solid var(--gui-border);
+    border-bottom: 0.26mm solid var(--gui-border);
     font-size: 12px;
     color: var(--gui-text-dim)
 }
@@ -306,7 +306,7 @@ body {
     justify-content: space-between;
     padding: 8px 16px;
     background: var(--gui-surface);
-    border-bottom: 1px solid var(--gui-border);
+    border-bottom: 0.26mm solid var(--gui-border);
     font-size: 12px;
     color: var(--gui-text-dim);
     flex-shrink: 0
@@ -320,7 +320,7 @@ body {
 
 .preview-zoom button {
     background: var(--gui-surface2);
-    border: 1px solid var(--gui-border);
+    border: 0.26mm solid var(--gui-border);
     color: var(--gui-text);
     width: 26px;
     height: 26px;
@@ -399,7 +399,7 @@ body {
 
 /* 页面内部布局：红色圆角外框 → 提示文字 → 黑色矩形内框 → 三栏内容 */
 .sheet-outer-frame {
-    height: calc(297mm - 2*var(--card-padding));
+    height: calc(297mm - 2*var(--card-padding) - 4mm);
     display: flex;
     position: relative;
     overflow: hidden;
@@ -424,7 +424,7 @@ body {
     /* flex: 1; */
     display: flex;
     flex-direction: column;
-    border: 1.5px solid var(--card-red);
+    border: 0.3mm solid var(--card-red);
     border-radius: 3.5mm;
     overflow: hidden;
 }
@@ -441,7 +441,7 @@ body {
 
 .sheet-col-inner {
     flex: 1;
-    border: 1.2px solid var(--card-border);
+    border: 0.2mm solid var(--card-border);
     margin: 0 1.2mm;
     overflow: hidden;
 }
@@ -470,6 +470,17 @@ body {
     font-family: var(--card-body-font);
     font-size: 11px;
     color: var(--card-red);
+    line-height: 1;
+    letter-spacing: 0;
+}
+
+.sheet-footer-mark-2 {
+    position: absolute;
+    bottom: 5mm;
+    right: 20mm;
+    font-family: var(--card-body-font);
+    font-size: 11px;
+    color: #BBB;
     line-height: 1;
     letter-spacing: 0;
 }
@@ -528,9 +539,9 @@ body {
     display: flex;
     flex-direction: row;
     position: absolute;
-    bottom: 10mm;
-    left: 18mm;
-    right: 18mm;
+    bottom: 9.6mm;
+    left: 20mm;
+    right: 20mm;
     gap: 2mm;
 }
 
@@ -538,7 +549,7 @@ body {
 .sheet-q-row {
     display: flex;
     align-items: flex-start;
-    padding: 0.8mm 0.5mm;
+    padding: 0.4mm 0.5mm;
     font-family: var(--card-body-font);
     font-size: 1em;
     line-height: 1.4;
@@ -588,7 +599,7 @@ body {
     justify-content: center;
     width: 1.4em;
     height: 0.85em;
-    border: 1.2px solid var(--card-red);
+    border: 0.2mm solid var(--card-red);
     /* border-radius: 1px; */
     font-family: var(--card-option-font);
     font-size: 0.7em;
@@ -607,9 +618,9 @@ body {
 }
 
 .sheet-fill-blank {
-    border-bottom: 1.2px solid var(--card-red);
+    border-bottom: 0.2mm solid var(--card-red);
     width: 36mm;
-    height: 8mm;
+    height: 10mm;
     flex-shrink: 0;
     flex-grow: 0;
 }
@@ -617,8 +628,9 @@ body {
 /* —— 横线 —— */
 .sheet-writing-line {
     width: 100%;
-    border-bottom: 1px solid var(--card-red);
-    height: 9mm;
+    border-bottom: 0.2mm solid var(--card-red);
+    height: 10mm;
+    /* padding-top: -2px; */
 }
 
 /* —— 解答空白 —— */
@@ -629,7 +641,7 @@ body {
 /* —— 分割线 —— */
 .sheet-hr {
     border: none;
-    border-top: 1.2px solid var(--card-border);
+    border-top: 0.2mm solid var(--card-border);
     margin: 2mm -3mm;
 }
 
@@ -668,20 +680,20 @@ body {
 
 .sheet-header-title-main {
     font-family: var(--card-title-font);
-    font-size: 1.5em;
-    font-weight: 400;
+    font-size: 1.4em;
+    font-weight: 300;
     color: #000;
     line-height: 1.5;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
 }
 
 .sheet-header-title-sub {
     font-family: var(--card-title-font);
-    font-size: 1.5em;
-    font-weight: 400;
+    font-size: 1.4em;
+    font-weight: 300;
     color: #000;
     line-height: 1.5;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
 }
 
 .sheet-header-info {
@@ -697,22 +709,24 @@ body {
 .sheet-header-field {
     display: flex;
     align-items: center;
-    margin-bottom: 3mm;
+    margin-bottom: 0mm;
     font-family: var(--card-title-font);
     font-size: 1em;
     font-weight: 400;
 }
 
 .sheet-header-field-label {
+    /* font-family: Simsun; */
     white-space: nowrap;
-    margin-right: 3mm;
-    letter-spacing: 2mm;
+    /* margin-right: 1mm; */
+    letter-spacing: 3mm;
+    font-size: 0.9em;
 }
 
 .sheet-header-field-line {
     flex: 1;
-    border-bottom: 1.5px solid var(--card-red);
-    height: 8mm;
+    border-bottom: 0.2mm solid var(--card-red);
+    height: 7mm;
 }
 
 .sheet-header-id-boxes {
@@ -721,14 +735,15 @@ body {
 }
 
 .sheet-header-id-box {
-    width: 5.8mm;
-    height: 7mm;
-    border: 1.5px solid red;
-    margin-right: -1.5px;
+    width: 5mm;
+    height: 6mm;
+    border: 0.26mm solid red;
+    margin-right: -0.26mm;
 }
 
 .sheet-header-barcode {
-    width: 46mm;
+    margin-top: 9mm;
+    width: 45mm;
     /* min-height: 28mm; */
     border: 1.5px dashed var(--card-red);
     border-radius: 3mm;
@@ -746,7 +761,7 @@ body {
 .sheet-header-notice {
     /* height: 36mm; */
     position: relative;
-    border: 1.5px solid var(--card-red);
+    border: 0.3mm solid var(--card-red);
     display: flex;
     font-size: 11px;
     color: var(--card-red);
@@ -756,7 +771,7 @@ body {
 
 .sheet-header-notice-left {
     width: 26mm;
-    border-right: 1.5px solid var(--card-red);
+    border-right: 0.3mm solid var(--card-red);
     padding: 1mm;
     display: flex;
     flex-direction: column;
@@ -803,7 +818,7 @@ body {
     display: inline-block;
     width: 3.2mm;
     height: 2.0mm;
-    border: 1.2px solid var(--card-red);
+    border: 0.3mm solid var(--card-red);
 }
 
 .sheet-fill-example {
@@ -817,7 +832,7 @@ body {
     width: 3.8mm;
     height: 2.2mm;
     background: #000;
-    /* border: 1px solid #000; */
+    /* border: 0.26mm solid #000; */
 }
 
 .sheet-fill-wrong-row {
@@ -828,7 +843,7 @@ body {
 .sheet-fill-wrong-item {
     width: 3.8mm;
     height: 2.2mm;
-    border: 1px solid var(--card-red);
+    border: 0.2mm solid var(--card-red);
     color: #000;
     display: flex;
     align-items: center;
@@ -883,7 +898,7 @@ body {
     top: 18mm;
     bottom: 16mm;
     width: 3.5mm;
-    border: 0.3mm solid red;
+    border: 0.24mm solid red;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -937,6 +952,11 @@ body {
 @media print {
     body * {
         visibility: hidden
+    }
+
+    .sheet-page::before {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
     }
 
     .print-container,
@@ -1085,7 +1105,7 @@ body {
 
 .modal {
     background: var(--gui-surface);
-    border: 1px solid var(--gui-border);
+    border: 0.26mm solid var(--gui-border);
     border-radius: var(--gui-radius);
     padding: 24px;
     max-width: 620px;
@@ -1133,7 +1153,7 @@ body {
         min-width: unset;
         height: 50%;
         border-right: none;
-        border-bottom: 1px solid var(--gui-border)
+        border-bottom: 0.26mm solid var(--gui-border)
     }
 
     .resizer {
@@ -1154,4 +1174,15 @@ body {
     color: #000;
     white-space: nowrap;
     align-items: center;
+}
+/* ===== 斜向重复水印 ===== */
+.sheet-page::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;    /* 不拦截点击 */
+    z-index: 1;              /* 在内容下方还是上方，自选 */
+    opacity: 0.02;           /* 浓度：0.03 ~ 0.10 */
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200'><text x='0' y='100' font-size='30' font-family='Times New Roman,serif' fill='black' transform='rotate(25 150 100)'>6B50EF</text></svg>");
+    background-repeat: repeat;
 }
