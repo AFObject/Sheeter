@@ -48,14 +48,17 @@ function parse(source) {
         if (m) { tokens.push({ type: 'blankspace', lines: parseInt(m[1]), noNum: true, joinNext: !!m[2] }); continue; }
 
         // numbered items — 末尾可选 "+"，题号后可选 "(标注)"
-        m = line.match(/^([^.]+)\.\s*(?:\(([^)]*)\)\s*)?([A-Za-z])-(\d+)\s*(\+)?\s*$/);
+        m = line.match(/^([^.]+)\.\s*(?:\(([^)]*)\)\s*)?(?:([XxTtLlBbJj])-(\d+)|([Pp]))\s*(\+)?\s*$/);
         if (m) {
             const num = m[1];
             const note = m[2] || '';   // 标注文本（可选）
-            const code = m[3].toUpperCase();
+            const code = (m[3] || m[5]).toUpperCase();
             const param = parseInt(m[4]);
-            const joinNext = !!m[5];
+            const joinNext = !!m[6];
             switch (code) {
+                case 'P':
+                    tokens.push({ type: 'choice', num, note, labels: 'TF', count: 2, joinNext });
+                    break;
                 case 'X': tokens.push({ type: 'choice', num, note, count: param, joinNext }); break;
                 case 'T': tokens.push({ type: 'fill', num, note, count: param, joinNext }); break;
                 case 'L': tokens.push({ type: 'lines', num, note, count: param, joinNext }); break;
@@ -87,9 +90,9 @@ function renderOneToken(tok) {
             return `<div class="sheet-item sheet-section-title">${esc(tok.text)}</div>`;
 
         case 'choice': {
-            const L = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const labels = tok.labels || 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
             let o = '';
-            for (let i = 0; i < tok.count; i++) o += `<span class="sheet-option-box">${L[i]}</span>`;
+            for (let i = 0; i < tok.count; i++) o += `<span class="sheet-option-box">${labels[i]}</span>`;
             const noteHtml = tok.note ? `<span class="sheet-qnote">(${esc(tok.note)})</span>` : '';
             return `<div class="sheet-item sheet-q-row">
                 <span class="sheet-qnum">${tok.num}</span>
